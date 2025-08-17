@@ -260,7 +260,7 @@ export default function LabelPrintingApp() {
 
   // Preview zoom
   const [showOutlines, setShowOutlines] = useState(false);
-  const [zoom, setZoom] = useState(100); // %
+  const [zoom, setZoom] = useState(150); // %
 
   // Designer toggles
   const [designerMode, setDesignerMode] = useState(false);
@@ -651,7 +651,7 @@ useEffect(() => {
               <div className="relative rounded-xl bg-white" style={{ minHeight: 420, maxHeight: '60vh', overflow: 'auto', display: 'grid', placeItems: 'center' }}>
                 <div
                   style={{
-                    transform: `scale(${zoom / 150})`,
+                    transform: `scale(${zoom / 100})`,
                     transformOrigin: 'center',
                     width: mm(activeTemplate.labelWidthMm),
                     height: mm(activeTemplate.labelHeightMm),
