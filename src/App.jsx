@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { LeftCard, RightCard, CardContent, CardSetting } from "components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LeftCard, RightCard, CardContent, CardSetting } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, NativeSelect, SelectTrigger, SelectValue } from "@/components/ui/select";
