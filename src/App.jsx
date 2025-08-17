@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { computeLayout } from "./utils/layout.js";
+import { asset } from '@/lib/asset';
 
 /**
  * Label Printing Web App — SVG/PNG export-first
@@ -87,7 +88,7 @@ const DEFAULT_TEMPLATES = [
     name: "FR2433",
     labelWidthMm: 60.94,
     labelHeightMm: 64.939,
-    backgroundUrl: "/src/assets/FR2433.svg",
+    backgroundUrl: 'labels/FR2433.svg',
     fields: [
       { key: "lot", label: "Lot", x: 8.8, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
       { key: "exp", label: "Exp", x: 27.4, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
@@ -100,7 +101,7 @@ const DEFAULT_TEMPLATES = [
     name: "FT37321",
     labelWidthMm: 60.94, // TODO: adjust if this template's physical size differs
     labelHeightMm: 64.939, // TODO: adjust if needed
-    backgroundUrl: "/src/assets/FT37321.svg",
+    backgroundUrl: 'labels/FR2433.svg',
     // Start with FR2433 text positions; tweak in Designer if FT37321 layout differs
     fields: [
       { key: "lot", label: "Lot", x: 8.8, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
@@ -153,7 +154,7 @@ function buildLabelGroupSVG({
   const sy = labelH / t.labelHeightMm;
 
   // normalize to absolute URL here
-  const bgHref = bgUrl ? toAbs(bgUrl) : "";
+  const bgHref = bgUrl ? asset(bgUrl) : '';
 
   const bg = bgHref
     ? `<image href="${bgHref}" x="0" y="0" width="${labelW}" height="${labelH}" preserveAspectRatio="none" />`
@@ -324,7 +325,7 @@ export default function LabelPrintingApp() {
       >
         {bgUrl && (
           <img
-            src={bgUrl}
+            src={asset(bgUrl)}
             alt=""
             referrerPolicy="no-referrer"
             style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "fill", userSelect: "none", pointerEvents: "none" }}

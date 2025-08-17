@@ -4,7 +4,7 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
-  server: { port: 8080, host: true, open: true },
-  preview: { port: 8080, host: true }
+  base: '/Suture-Label/', 
 });
+
+

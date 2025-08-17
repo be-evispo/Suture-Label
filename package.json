@@ -1,4 +1,5 @@
 {
+  "homepage": "https://be-evispo.github.io/Suture-Label",
   "name": "label-printing-app",
   "private": true,
   "version": "0.0.1",
@@ -6,7 +7,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy":"npm run build",
+    "deploy":"gh-pages -d dist"
   },
   "dependencies": {
     "react": "^18.3.1",
