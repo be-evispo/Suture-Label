@@ -1,15 +1,14 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { fileURLToPath, URL } from 'node:url'   // ✅ ESM-safe path helper
 
 export default defineConfig({
   plugins: [react()],
-  base: '/Suture-Label/', // <-- your repo name for GitHub Pages
+  base: '/Suture-Label/',                       // 👈 your repo name for GitHub Pages
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),   // <-- makes "@/..." point to /src
+      '@': fileURLToPath(new URL('./src', import.meta.url)), // ✅ "@/..." -> /src
     },
   },
 })
-
-
