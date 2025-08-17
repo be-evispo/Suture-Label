@@ -651,7 +651,7 @@ useEffect(() => {
               <div className="relative rounded-xl bg-white" style={{ minHeight: 420, maxHeight: '60vh', overflow: 'auto', display: 'grid', placeItems: 'center' }}>
                 <div
                   style={{
-                    transform: `scale(${zoom / 100})`,
+                    transform: `scale(${zoom / 150})`,
                     transformOrigin: 'center',
                     width: mm(activeTemplate.labelWidthMm),
                     height: mm(activeTemplate.labelHeightMm),
