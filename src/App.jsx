@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { computeLayout } from "./utils/layout.js";
 import { asset } from '@/lib/asset';
+import FR2433Url from '@/assets/FR2433.svg?url';
+import FT37321Url from '@/assets/FT37321.svg?url';
 
 /**
  * Label Printing Web App — SVG/PNG export-first
@@ -88,7 +90,7 @@ const DEFAULT_TEMPLATES = [
     name: "FR2433",
     labelWidthMm: 60.94,
     labelHeightMm: 64.939,
-    backgroundUrl: 'labels/FR2433.svg',
+    backgroundUrl: FR2433Url,
     fields: [
       { key: "lot", label: "Lot", x: 8.8, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
       { key: "exp", label: "Exp", x: 27.4, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
@@ -101,7 +103,7 @@ const DEFAULT_TEMPLATES = [
     name: "FT37321",
     labelWidthMm: 60.94, // TODO: adjust if this template's physical size differs
     labelHeightMm: 64.939, // TODO: adjust if needed
-    backgroundUrl: 'labels/FR2433.svg',
+    backgroundUrl: FT37321Url,
     // Start with FR2433 text positions; tweak in Designer if FT37321 layout differs
     fields: [
       { key: "lot", label: "Lot", x: 8.8, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
