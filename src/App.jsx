@@ -101,29 +101,17 @@ const DEFAULT_TEMPLATES = [
   {
     code: "FR2433",
     name: "FR2433",
-    labelWidthMm: 60.94,
-    labelHeightMm: 64.939,
+    BASE_SIZE,
     backgroundUrl: FR2433Url,
-    fields: [
-      { key: "lot", label: "Lot", x: 8.8, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
-      { key: "exp", label: "Exp", x: 27.4, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
-      { key: "pro", label: "Pro", x: 48.6, y: 48.5, width: 10, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
-      { key: "nie", label: "NIE", x: 21.07, y: 62.07, width: 60.94 - 2 * 21.07, align: "center", fontSizeMm: 3.0, fontWeight: 600 }
-    ]
+    fields: BASE_FIELDS.map(f => ({ ...f })),
   },
   {
     code: "FT37321",
     name: "FT37321",
-    labelWidthMm: 60.94, // TODO: adjust if this template's physical size differs
-    labelHeightMm: 64.939, // TODO: adjust if needed
+    BASE_SIZE,
     backgroundUrl: FT37321Url,
     // Start with FR2433 text positions; tweak in Designer if FT37321 layout differs
-    fields: [
-      { key: "lot", label: "Lot", x: 8.8, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
-      { key: "exp", label: "Exp", x: 27.4, y: 48.5, width: 14, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
-      { key: "pro", label: "Pro", x: 48.6, y: 48.5, width: 10, align: "left", fontSizeMm: 3.0, fontWeight: 600 },
-      { key: "nie", label: "NIE", x: 21.07, y: 62.07, width: 60.94 - 2 * 21.07, align: "center", fontSizeMm: 3.0, fontWeight: 600 }
-    ]
+    fields: BASE_FIELDS.map(f => ({ ...f })),
   }
 ];
 
