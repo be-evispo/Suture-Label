@@ -35,6 +35,7 @@ function downloadBlob(filename, blob) {
   a.remove();
   URL.revokeObjectURL(url);
 }
+
 async function svgToPngDataUrl(svg, widthPx, heightPx) {
   const img = new Image();
   img.decoding = "async";
@@ -259,7 +260,7 @@ export default function LabelPrintingApp() {
 
   // Preview zoom
   const [showOutlines, setShowOutlines] = useState(false);
-  const [zoom, setZoom] = useState(100); // %
+  const [zoom, setZoom] = useState(150); // %
 
   // Designer toggles
   const [designerMode, setDesignerMode] = useState(false);
