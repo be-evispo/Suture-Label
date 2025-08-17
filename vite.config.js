@@ -4,7 +4,12 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  base: '/Suture-Label/', 
-});
+  base: '/Suture-Label/', // <-- your repo name for GitHub Pages
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),   // <-- makes "@/..." point to /src
+    },
+  },
+})
 
 
