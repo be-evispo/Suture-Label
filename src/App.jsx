@@ -260,7 +260,7 @@ export default function LabelPrintingApp() {
 
   // Preview zoom
   const [showOutlines, setShowOutlines] = useState(false);
-  const [zoom, setZoom] = useState(150); // %
+  const [zoom, setZoom] = useState(100); // %
 
   // Designer toggles
   const [designerMode, setDesignerMode] = useState(false);
