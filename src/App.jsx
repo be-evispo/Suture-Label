@@ -97,22 +97,17 @@ const BASE_FIELDS = [
 ];
 
 // ------------------------- Templates -------------------------
-const DEFAULT_TEMPLATES = [
-  {
-    code: "FR2433",
-    name: "FR2433",
-    BASE_SIZE,
-    backgroundUrl: FR2433Url,
-    fields: BASE_FIELDS.map(f => ({ ...f })),
-  },
-  {
-    code: "FT37321",
-    name: "FT37321",
-    BASE_SIZE,
-    backgroundUrl: FT37321Url,
-    // Start with FR2433 text positions; tweak in Designer if FT37321 layout differs
-    fields: BASE_FIELDS.map(f => ({ ...f })),
-  }
+const makeTemplate = (code, bgUrl) => ({
+  code,
+  name: code,
+  backgroundUrl: bgUrl,
+  ...BASE_SIZE,
+  fields: BASE_FIELDS.map(f => ({ ...f })),
+});
+
+export const DEFAULT_TEMPLATES = [
+  makeTemplate('FR2433', FR2433Url),
+  makeTemplate('FT37321', FT37321Url),
 ];
 
 // ------------------------- Paper sizes -------------------------
