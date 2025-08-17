@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { LeftCard, RightCard, CardContent, CardSetting } from "@/components/ui/card";
+import { LeftCard, RightCard, CardContent, CardSetting } from "src/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
