@@ -1,17 +1,17 @@
 "use client";
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { Button } from "/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { LeftCard, RightCard, CardContent, CardSetting } from "/src/components/ui/card";
-import { Input } from "/src/components/ui/input";
-import { Label } from "/src/components/ui/label";
-import { Select, SelectContent, SelectItem, NativeSelect, SelectTrigger, SelectValue } from "/src/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, NativeSelect, SelectTrigger, SelectValue } from "@/components/ui/select";
 // import { computeLayout } from "./utils/layout.js"; // ⛔️ replaced with computeLayout4 below
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "/src/components/ui/tabs";
-import { Switch } from "/src/components/ui/switch";
-import { Slider } from "/src/components/ui/slider";
-import { asset } from '/src/lib/asset';
-import FR2433Url from '/src/assets/FR2433.svg?url';
-import FT37321Url from '/src/assets/FT37321.svg?url';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { asset } from '@/lib/asset';
+import FR2433Url from '@/assets/FR2433.svg?url';
+import FT37321Url from '@/assets/FT37321.svg?url';
 
 /**
  * Label Printing Web App — SVG/PNG export-first
