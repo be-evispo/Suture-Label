@@ -1,17 +1,17 @@
 "use client";
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { LeftCard, RightCard, CardContent, CardSetting } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, NativeSelect, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { computeLayout } from "./utils/layout.js";
-import { asset } from '@/lib/asset';
-import FR2433Url from '@/assets/FR2433.svg?url';
-import FT37321Url from '@/assets/FT37321.svg?url';
+import { Button } from "/src/components/ui/button";
+import { LeftCard, RightCard, CardContent, CardSetting } from "/src/components/ui/card";
+import { Input } from "/src/components/ui/input";
+import { Label } from "/src/components/ui/label";
+import { Select, SelectContent, SelectItem, NativeSelect, SelectTrigger, SelectValue } from "/src/components/ui/select";
+// import { computeLayout } from "./utils/layout.js"; // ⛔️ replaced with computeLayout4 below
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "/src/components/ui/tabs";
+import { Switch } from "/src/components/ui/switch";
+import { Slider } from "/src/components/ui/slider";
+import { asset } from '/src/lib/asset';
+import FR2433Url from '/src/assets/FR2433.svg?url';
+import FT37321Url from '/src/assets/FT37321.svg?url';
 
 /**
  * Label Printing Web App — SVG/PNG export-first
@@ -124,7 +124,11 @@ const DEFAULT_SETTINGS = {
   customW: 210,
   customH: 297,
   orientation: "portrait",
-  margin: 10,
+  // NEW: four-side margins
+  marginTop: 10,
+  marginRight: 10,
+  marginBottom: 10,
+  marginLeft: 10,
   labelW: 60.94,
   labelH: 64.939,
   gapX: 3,
@@ -135,15 +139,34 @@ const DEFAULT_SETTINGS = {
 const PRINT_OFFSET = { x: 0, y: 0 };        // shifts entire label grid on page (export & print)
 const PRINT_TEXT_OFFSET = { x: 0.3, y: 0.3 };   // shifts only text inside each label (export & print)
 
+// ---------- NEW: layout helper with 4-side margins ----------
+function computeLayout4({
+  paperW, paperH,
+  marginTop, marginRight, marginBottom, marginLeft,
+  labelW, labelH,
+  gapX, gapY,
+}) {
+  const availW = Math.max(0, paperW - marginLeft - marginRight);
+  const availH = Math.max(0, paperH - marginTop - marginBottom);
 
-// ------------------------- SVG builders -------------------------
+  const cols = labelW > 0
+    ? Math.max(0, Math.floor((availW + gapX) / (labelW + gapX)))
+    : 0;
+
+  const rows = labelH > 0
+    ? Math.max(0, Math.floor((availH + gapY) / (labelH + gapY)))
+    : 0;
+
+  return { cols, rows, perPage: cols * rows };
+}
+
 // ------------------------- SVG builders -------------------------
 function buildLabelGroupSVG({
   template: t,
   values,
   labelW,
   labelH,
-  bgUrl,            
+  bgUrl,
   showOutlines,
   indexText,
   textOffsetX = 0,
@@ -152,7 +175,7 @@ function buildLabelGroupSVG({
   const sx = labelW / t.labelWidthMm;
   const sy = labelH / t.labelHeightMm;
 
-  // normalize to absolute URL here
+  // normalize to absolute/served URL
   const bgHref = bgUrl ? asset(bgUrl) : '';
 
   const bg = bgHref
@@ -196,9 +219,9 @@ function buildLabelGroupSVG({
   return `${outline}${bg}${fields}${idx}`;
 }
 
-
 function buildPageSVG({
-  paperW, paperH, margin,
+  paperW, paperH,
+  marginTop, marginRight, marginBottom, marginLeft,
   labelW, labelH, gapX, gapY,
   layout, template, values, bgUrl, showOutlines, pageIndex = 0,
   offsetX = 0, offsetY = 0,
@@ -209,8 +232,8 @@ function buildPageSVG({
   let counter = 0;
   for (let r = 0; r < layout.rows; r++) {
     for (let c = 0; c < layout.cols; c++) {
-      const x = margin + offsetX + c * (labelW + gapX);
-      const y = margin + offsetY + r * (labelH + gapY);
+      const x = marginLeft + offsetX + c * (labelW + gapX);
+      const y = marginTop  + offsetY + r * (labelH + gapY);
       const indexText = `#${counter + 1 + pageIndex * layout.perPage}`;
       const clipId = `cp_${pageIndex}_${r}_${c}`;
       defs += `<clipPath id="${clipId}"><rect x="0" y="0" width="${labelW}" height="${labelH}" /></clipPath>`;
@@ -265,7 +288,7 @@ export default function LabelPrintingApp() {
   // Designer toggles
   const [designerMode, setDesignerMode] = useState(false);
   const [bgUrl, setBgUrl] = useState(activeTemplate.backgroundUrl || "");
-  // Just use local assets (served from /public). Resolve to absolute URL so print window works too.
+  // Resolve to absolute URL so print window works too.
   useEffect(() => {
     const raw = activeTemplate.backgroundUrl || "";
     setBgUrl(raw ? toAbs(raw) : "");
@@ -283,19 +306,26 @@ export default function LabelPrintingApp() {
     return settings.orientation === "landscape" ? { w: sized.h, h: sized.w } : sized;
   }, [settings.paperPreset, settings.customW, settings.customH, settings.orientation]);
 
-  // Layout (how many fit per page)
+  // 4-side margins (already in settings)
+  const { marginTop, marginRight, marginBottom, marginLeft } = settings;
+
+  // Layout (how many fit per page) — uses 4-side margins
   const layout = useMemo(
     () =>
-      computeLayout({
+      computeLayout4({
         paperW: paperSize.w,
         paperH: paperSize.h,
-        margin: settings.margin,
+        marginTop, marginRight, marginBottom, marginLeft,
         labelW: settings.labelW,
         labelH: settings.labelH,
         gapX: settings.gapX,
         gapY: settings.gapY,
       }),
-    [paperSize.w, paperSize.h, settings.margin, settings.labelW, settings.labelH, settings.gapX, settings.gapY]
+    [
+      paperSize.w, paperSize.h,
+      marginTop, marginRight, marginBottom, marginLeft,
+      settings.labelW, settings.labelH, settings.gapX, settings.gapY
+    ]
   );
 
   // ------------------------- LabelView (screen preview uses original DOM/CSS) -------------------------
@@ -360,20 +390,17 @@ export default function LabelPrintingApp() {
     );
   };
 
-// ------------------------- SVG state & regeneration -------------------------
+  // ------------------------- SVG state & regeneration -------------------------
   const [pageSvgs, setPageSvgs] = useState([]); // array of full-page SVG strings
   const [exportDpi, setExportDpi] = useState(300);
-    
-  // Build a single-label SVG (at template native size)
+
   useEffect(() => {
-    // Single label preview SVG
-    // Full pages SVG array
     const svgs = [];
     for (let p = 0; p < settings.pages; p++) {
       const ps = buildPageSVG({
         paperW: paperSize.w,
         paperH: paperSize.h,
-        margin: settings.margin,
+        marginTop, marginRight, marginBottom, marginLeft,
         labelW: settings.labelW,
         labelH: settings.labelH,
         gapX: settings.gapX,
@@ -394,14 +421,14 @@ export default function LabelPrintingApp() {
     setPageSvgs(svgs);
   }, [
     paperSize.w, paperSize.h,
-    settings.margin, settings.labelW, settings.labelH, settings.gapX, settings.gapY, settings.pages,
+    marginTop, marginRight, marginBottom, marginLeft,
+    settings.labelW, settings.labelH, settings.gapX, settings.gapY, settings.pages,
     layout.cols, layout.rows, layout.perPage,
     activeTemplate, values.lot, values.exp, values.pro, values.nie, bgUrl, showOutlines
   ]);
 
   // ------------------------- Printing -------------------------
-  // Print the generated SVG pages in an isolated window so the browser prints the
-  // exact same artifacts as the exported SVG (no interference from app CSS/DOM).
+  // Print the generated SVG pages in an isolated window
   async function printFromSVGPages() {
     const htmlStart = `<!DOCTYPE html><html><head><meta charset="utf-8" />
       <title>Print</title>
@@ -420,7 +447,6 @@ export default function LabelPrintingApp() {
     w.document.open();
     w.document.write(htmlStart);
     for (let i = 0; i < pageSvgs.length; i++) {
-      // each page is inline SVG wrapped in a .page div
       w.document.write(`<div class="page">${pageSvgs[i]}</div>`);
     }
     w.document.write(htmlEnd);
@@ -431,7 +457,7 @@ export default function LabelPrintingApp() {
     w.print();
   }
 
-useEffect(() => {
+  useEffect(() => {
     if (!printing) return;
     const style = document.createElement("style");
     style.id = "print-style";
@@ -533,105 +559,11 @@ useEffect(() => {
 
               <Tabs defaultValue="print">
                 <TabsList>
-                  {/*<TabsTrigger value="print">Print Setup</TabsTrigger>
-                  <TabsTrigger value="designer">Template Designer</TabsTrigger>*/}
                   <Button onClick={openSetup}>Print ({total})</Button>
                 </TabsList>
 
-                {/*<TabsContent value="print">
-                  <div className="grid grid-cols-2 gap-3 items-center">
-                    <div className="col-span-2 flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-2">
-                        <Switch checked={showOutlines} onCheckedChange={setShowOutlines} />
-                        <span className="text-sm">Show outlines</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="secondary" onClick={() => {
-                          pageSvgs.forEach((svg, i) => downloadBlob(`labels-page-${i + 1}.svg`, new Blob([svg], { type: "image/svg+xml;charset=utf-8" })));
-                        }}>Export SVG</Button>
-                        <div className="flex items-center gap-1">
-                          <Input type="number" className="w-20" value={exportDpi} onChange={(e) => setExportDpi(Math.max(72, Number(e.target.value) || 300))} />
-                          <span className="text-xs opacity-70">DPI</span>
-                        </div>
-                        <Button variant="secondary" onClick={async () => {
-                          for (let i = 0; i < pageSvgs.length; i++) {
-                            const svg = pageSvgs[i];
-                            const wPx = mmToPx(paperSize.w, exportDpi);
-                            const hPx = mmToPx(paperSize.h, exportDpi);
-                            try {
-                              const pngUrl = await svgToPngDataUrl(svg, wPx, hPx);
-                              const res = await fetch(pngUrl);
-                              const blob = await res.blob();
-                              downloadBlob(`labels-page-${i + 1}-${exportDpi}dpi.png`, blob);
-                            } catch (e) {
-                              console.error("PNG export failed (CORS?)", e);
-                              alert("PNG export failed. If you used an external image, try uploading it so it becomes a data: URL.");
-                              break;
-                            }
-                          }
-                        }}>Export PNG</Button>}
-                        <Button onClick={openSetup}>Print ({total})</Button>
-                      </div>
-                      <Button onClick={openSetup}>Print ({total})</Button>
-                    </div>
-                  </div>
-                </TabsContent>
-                */}
-
                 <TabsContent value="designer">
-                  <div className="space-y-4">
-                    {/*<div className="grid grid-cols-2 gap-3 items-center">
-                      <Label>Background URL</Label>
-                      <Input value={bgUrl} onChange={(e) => setBgUrl(toAbs(e.target.value))} placeholder="Paste template image URL (PNG/SVG)" />
-                      <Label>or Upload</Label>
-                      <Input type="file" accept="image/*" onChange={(e) => e.target.files && onUpload(e.target.files[0])} />
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-center">
-                      <Label>Label width (mm)</Label>
-                      <Input type="number" value={activeTemplate.labelWidthMm} onChange={(e) => { activeTemplate.labelWidthMm = parseFloat(e.target.value || "0"); setTemplates([...templates]); }} />
-                      <Label>Label height (mm)</Label>
-                      <Input type="number" value={activeTemplate.labelHeightMm} onChange={(e) => { activeTemplate.labelHeightMm = parseFloat(e.target.value || "0"); setTemplates([...templates]); }} />
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                      <Switch checked={designerMode} onCheckedChange={setDesignerMode} />
-                      <span className="text-sm">Enable fine-tune controls</span>
-                    </div>
-
-                    {designerMode && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {activeTemplate.fields.map((f, idx) => (
-                          <LeftCard key={idx} className="border-dashed">
-                            <CardContent className="p-3 grid grid-cols-2 gap-2 items-center">
-                              <div className="col-span-2 font-medium">{f.label} ({f.key.toUpperCase()})</div>
-                              <Label>X (mm)</Label>
-                              <Input type="number" step={0.1} value={f.x} onChange={(e) => { f.x = parseFloat(e.target.value || "0"); setTemplates([...templates]); }} />
-                              <Label>Y (mm)</Label>
-                              <Input type="number" step={0.1} value={f.y} onChange={(e) => { f.y = parseFloat(e.target.value || "0"); setTemplates([...templates]); }} />
-                              <Label>Width (mm)</Label>
-                              <Input type="number" value={f.width ?? 0} onChange={(e) => { f.width = parseFloat(e.target.value || "0"); setTemplates([...templates]); }} />
-                              <Label>Font (mm)</Label>
-                              <Input type="number" value={f.fontSizeMm ?? 3} onChange={(e) => { f.fontSizeMm = parseFloat(e.target.value || "0"); setTemplates([...templates]); }} />
-                              <Label>Align</Label>
-                              <Select value={f.align || "left"} onValueChange={(v) => { f.align = v; setTemplates([...templates]); }}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="left">Left</SelectItem>
-                                  <SelectItem value="center">Center</SelectItem>
-                                  <SelectItem value="right">Right</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </CardContent>
-                          </LeftCard>
-                        ))}
-                      </div>
-                    )}*/}
-
-                    {/*<div className="flex gap-2">
-                      <Button variant="secondary" onClick={saveTemplate}>Save template</Button>
-                    </div>*/}
-                  </div>
+                  <div className="space-y-4">{/* designer UI can go here */}</div>
                 </TabsContent>
               </Tabs>
             </CardSetting>
@@ -656,7 +588,7 @@ useEffect(() => {
                     width: mm(activeTemplate.labelWidthMm),
                     height: mm(activeTemplate.labelHeightMm),
                   }}
-                  >
+                >
                   <LabelView />
                 </div>
               </div>
@@ -707,9 +639,40 @@ useEffect(() => {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="margin" className="block text-sm font-medium mb-1">Page margin (mm)</label>
-                  <input id="margin" type="number" className="w-full rounded-lg border px-3 py-2" value={settings.margin} onChange={(e) => setSettings({ ...settings, margin: Number(e.target.value) })} />
+                {/* NEW: separate margins */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="mTop" className="block text-sm font-medium mb-1">Top (mm)</label>
+                    <input
+                      id="mTop" type="number" className="w-full rounded-lg border px-3 py-2"
+                      value={settings.marginTop}
+                      onChange={(e) => setSettings({ ...settings, marginTop: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="mRight" className="block text sm font-medium mb-1">Right (mm)</label>
+                    <input
+                      id="mRight" type="number" className="w-full rounded-lg border px-3 py-2"
+                      value={settings.marginRight}
+                      onChange={(e) => setSettings({ ...settings, marginRight: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="mBottom" className="block text-sm font-medium mb-1">Bottom (mm)</label>
+                    <input
+                      id="mBottom" type="number" className="w-full rounded-lg border px-3 py-2"
+                      value={settings.marginBottom}
+                      onChange={(e) => setSettings({ ...settings, marginBottom: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="mLeft" className="block text-sm font-medium mb-1">Left (mm)</label>
+                    <input
+                      id="mLeft" type="number" className="w-full rounded-lg border px-3 py-2"
+                      value={settings.marginLeft}
+                      onChange={(e) => setSettings({ ...settings, marginLeft: Number(e.target.value) })}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
